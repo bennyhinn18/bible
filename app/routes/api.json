@@ -1,0 +1,1015 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "bible-api",
+        "description": "",
+        "contact": {
+            "name": "Berin Aniesh",
+            "email": "berinaniesh@gmail.com"
+        },
+        "license": {
+            "name": ""
+        },
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "tags": [
+                    "Hello"
+                ],
+                "summary": "Hello Message",
+                "operationId": "home",
+                "responses": {
+                    "200": {
+                        "description": "API healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Hello"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/abbreviations": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "summary": "Get a list of abbreviations of books",
+                "operationId": "get_abbreviations",
+                "responses": {
+                    "200": {
+                        "description": "Get a list of abbreviations supported"
+                    }
+                }
+            }
+        },
+        "/books": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "summary": "Get a list of Bible books",
+                "operationId": "get_books",
+                "parameters": [
+                    {
+                        "name": "translation",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tr",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of bible books"
+                    }
+                }
+            }
+        },
+        "/chaptercount": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "summary": "Get the number of chapters in all books",
+                "description": "This is hardcoded and the endpoint does not use the database",
+                "operationId": "get_chaptercount",
+                "responses": {
+                    "200": {
+                        "description": "Number of chapters in all books",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BooksChapterCount"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/chaptercount/{book}": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "summary": "Get the number of chapters in a book",
+                "operationId": "get_chaptercount_book",
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Number of chapters in a book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Count"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/nav": {
+            "post": {
+                "tags": [
+                    "Frontend Helper"
+                ],
+                "summary": "Get the previous and next chapter / book to go to",
+                "description": "The frontend needs to know what page lies before and\nafter a specific chapter. So, instead of making multiple\nAPI calls, the information is sent in a separate endpoint",
+                "operationId": "get_next_page",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PageIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns info about the previous and next pages to navigate to",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PrevNext"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Atleast one argument of book or abbreviation is required"
+                    }
+                }
+            }
+        },
+        "/search": {
+            "post": {
+                "tags": [
+                    "Verse"
+                ],
+                "summary": "Get verses based on text search",
+                "description": "If the length of the search text is less than 3, an empty array is returned. (Not errored as the frontend does not have good error handling).",
+                "operationId": "search",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SearchParameters"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Search throughout the bible",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Verse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/translations": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "summary": "Get a list of available translations",
+                "operationId": "get_translations",
+                "responses": {
+                    "200": {
+                        "description": "List of bible translations available",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TranslationInfo"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/verses": {
+            "get": {
+                "tags": [
+                    "Verse"
+                ],
+                "summary": "Get a list of verses by filtering with VerseFilter",
+                "operationId": "get_verses",
+                "parameters": [
+                    {
+                        "name": "translation",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tr",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "book",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "b",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "abbreviation",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ab",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "chapter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "ch",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "startchapter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "sch",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "endchapter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "ech",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "verse",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "v",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "startverse",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "sv",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "endverse",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "ev",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get verses based on query parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Verse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Either of book or abbreviation parameters is required"
+                    }
+                }
+            }
+        },
+        "/verses/random": {
+            "get": {
+                "tags": [
+                    "Verse"
+                ],
+                "summary": "Get a random verse (not filtered to get good verses)",
+                "operationId": "get_random_verse",
+                "parameters": [
+                    {
+                        "name": "translation",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tr",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a random verse (not filtered for good verses, beware)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Verse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{translation}/books": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "summary": "Get a list of books with respect to the translation",
+                "description": "The name of the book in the translation language, etc",
+                "operationId": "get_translation_books",
+                "parameters": [
+                    {
+                        "name": "translation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get list of books with respect to the translation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Book"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{translation}/info": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "summary": "Get information about a specific translation",
+                "operationId": "get_translation_info",
+                "parameters": [
+                    {
+                        "name": "translation",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get information about specific translation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TranslationInfo"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Book": {
+                "type": "object",
+                "required": [
+                    "book_id",
+                    "book",
+                    "book_name",
+                    "abbreviation",
+                    "testament",
+                    "testament_name"
+                ],
+                "properties": {
+                    "book_id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "book": {
+                        "type": "string"
+                    },
+                    "book_name": {
+                        "type": "string"
+                    },
+                    "abbreviation": {
+                        "type": "string"
+                    },
+                    "testament": {
+                        "type": "string"
+                    },
+                    "testament_name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BooksChapterCount": {
+                "type": "object",
+                "required": [
+                    "book",
+                    "abbreviation",
+                    "chapters",
+                    "verses"
+                ],
+                "properties": {
+                    "book": {
+                        "type": "string"
+                    },
+                    "abbreviation": {
+                        "type": "string"
+                    },
+                    "chapters": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "verses": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "Count": {
+                "type": "object",
+                "required": [
+                    "count"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "Hello": {
+                "type": "object",
+                "required": [
+                    "greeting",
+                    "name",
+                    "about",
+                    "docs",
+                    "repository",
+                    "database",
+                    "text_encoding",
+                    "author"
+                ],
+                "properties": {
+                    "greeting": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "about": {
+                        "type": "string"
+                    },
+                    "docs": {
+                        "type": "string"
+                    },
+                    "repository": {
+                        "type": "string"
+                    },
+                    "database": {
+                        "type": "string"
+                    },
+                    "text_encoding": {
+                        "type": "string"
+                    },
+                    "author": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PageIn": {
+                "type": "object",
+                "required": [
+                    "chapter"
+                ],
+                "properties": {
+                    "book": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "abbreviation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "chapter": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "PageOut": {
+                "type": "object",
+                "required": [
+                    "book",
+                    "abbreviation",
+                    "chapter"
+                ],
+                "properties": {
+                    "book": {
+                        "type": "string"
+                    },
+                    "abbreviation": {
+                        "type": "string"
+                    },
+                    "chapter": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "PrevNext": {
+                "type": "object",
+                "properties": {
+                    "previous": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/PageOut"
+                            }
+                        ]
+                    },
+                    "next": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/PageOut"
+                            }
+                        ]
+                    }
+                }
+            },
+            "SearchParameters": {
+                "type": "object",
+                "required": [
+                    "search_text",
+                    "translation"
+                ],
+                "properties": {
+                    "search_text": {
+                        "type": "string"
+                    },
+                    "match_case": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "whole_words": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "translation": {
+                        "type": "string"
+                    },
+                    "book": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "abbreviation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "TranslationInfo": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "language"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "full_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "year": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "license": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "TranslationSelector": {
+                "type": "object",
+                "properties": {
+                    "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tr": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "Verse": {
+                "type": "object",
+                "required": [
+                    "translation",
+                    "book",
+                    "abbreviation",
+                    "book_name",
+                    "chapter",
+                    "verse_number",
+                    "verse"
+                ],
+                "properties": {
+                    "translation": {
+                        "type": "string"
+                    },
+                    "book": {
+                        "type": "string"
+                    },
+                    "abbreviation": {
+                        "type": "string"
+                    },
+                    "book_name": {
+                        "type": "string"
+                    },
+                    "chapter": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "verse_number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "verse": {
+                        "type": "string"
+                    }
+                }
+            },
+            "VerseFilter": {
+                "type": "object",
+                "properties": {
+                    "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tr": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "book": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "b": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "abbreviation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "ab": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "chapter": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "ch": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "startchapter": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "sch": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "endchapter": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "ech": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "verse": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "v": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "startverse": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "sv": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "endverse": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    },
+                    "ev": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32"
+                    }
+                }
+            }
+        }
+    }
+}
