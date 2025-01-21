@@ -183,7 +183,7 @@ export default function Chapters() {
           {versesError ? (
             <p className="text-red-500">{versesError}</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 mb-4">
               {verses.map((verse) => (
                 <div key={verse.verse_number} className="flex space-x-4">
                   <span className={`font-semibold ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{verse.verse_number}</span>
