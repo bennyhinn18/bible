@@ -46,6 +46,15 @@
     "vite": "^6.4.3",
     "vite-tsconfig-paths": "^4.2.1"
   },
+  "overrides": {
+    "esbuild": "^0.25.0",
+    "estree-util-value-to-estree": "^3.3.3",
+    "react-router": "^6.30.6",
+    "react-router-dom": "^6.30.6",
+    "tar": "^7.5.3",
+    "toml": "^4.1.2",
+    "turbo-stream": "^3.0.0"
+  },
   "engines": {
     "node": ">=20.0.0"
   }
